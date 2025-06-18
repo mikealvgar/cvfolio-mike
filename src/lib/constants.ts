@@ -1,6 +1,6 @@
 import type { z } from 'astro/zod';
 import MetaDefaultImage from '@/assets/images/meta-default.jpg';
-import avatar from '@/assets/images/avatar.jpeg';
+import avatar from '@/assets/images/avatar.jpg';
 import type { seoSchemaWithoutImage } from '@/content.config';
 import astroConfig from 'astro.config.mjs';
 
@@ -27,9 +27,9 @@ export const DEFAULT_CONFIGURATION: DefaultConfigurationType = {
   baseUrl: astroConfig.site || 'https://getcvfolio.com',
   author: {
     avatar,
-    name: 'Javier Diaz Chamorro',
-    headline: 'Engineering and Design',
-    username: 'coderdiaz',
+    name: 'Miguel Alvarez Garcia',
+    headline: 'Desarrollador Web y Móvil',
+    username: 'mikealvgar',
     location: 'Mexico City',
     pronouns: 'He/Him',
   },
