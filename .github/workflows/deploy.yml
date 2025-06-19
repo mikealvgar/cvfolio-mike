@@ -1,40 +1,39 @@
-name: Deploy Astro with npm to GitHub Pages
+name: Deploy to GitHub Pages
 
 on:
+  # Trigger the workflow every time you push to the `main` branch
+  # Using a different branch name? Replace `main` with your branch’s name
   push:
-    branches:
-      - main # Cambia a 'master' si tu rama principal es 'master'
+    branches: [main]
+  # Allows you to run this workflow manually from the Actions tab on GitHub.
+  workflow_dispatch:
+
+# Allow this job to clone the repo and create a page deployment
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write # Permiso para escribir archivos en el repositorio
-      pages: write     # Permiso para desplegar en GitHub Pages
-      id-token: write  # Permiso para usar OIDC para autenticación
-
-    env:
-      NODE_VERSION: '18' # O la versión de Node.js que use tu proyecto de Astro
-
     steps:
-      - name: Checkout repository
+      - name: Checkout your repository using git
         uses: actions/checkout@v4
+      - name: Install, build, and upload your site
+        uses: withastro/action@v3
+        # with:
+          # path: . # The root location of your Astro project inside the repository. (optional)
+          # node-version: 20 # The specific version of Node that should be used to build your site. Defaults to 20. (optional)
+          # package-manager: pnpm@latest # The Node package manager that should be used to install dependencies and build your site. Automatically detected based on your lockfile. (optional)
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm' # Configura el caché para npm
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Build Astro project
-        run: npm run build
-
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist # Asegúrate de que esta sea la carpeta de salida de tu build de Astro
-          cname: # Opcional: Si tienes un dominio personalizado, ponlo aquí, e.g., www.example.com
+        id: deployment
+        uses: actions/deploy-pages@v4
