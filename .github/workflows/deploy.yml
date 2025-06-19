@@ -1,0 +1,40 @@
+name: Deploy Astro with npm to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main # Cambia a 'master' si tu rama principal es 'master'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Permiso para escribir archivos en el repositorio
+      pages: write     # Permiso para desplegar en GitHub Pages
+      id-token: write  # Permiso para usar OIDC para autenticación
+
+    env:
+      NODE_VERSION: '18' # O la versión de Node.js que use tu proyecto de Astro
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm' # Configura el caché para npm
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Astro project
+        run: npm run build
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist # Asegúrate de que esta sea la carpeta de salida de tu build de Astro
+          cname: # Opcional: Si tienes un dominio personalizado, ponlo aquí, e.g., www.example.com
